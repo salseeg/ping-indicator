@@ -1,0 +1,3 @@
+include AUTHORS LICENSE MANIFEST.in README.creole 
+recursive-exclude * *.pyc 
+recursive-exclude * *.pyo

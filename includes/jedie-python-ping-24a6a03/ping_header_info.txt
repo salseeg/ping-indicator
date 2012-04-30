@@ -1,0 +1,50 @@
+IP header info from RFC791
+  -> http://tools.ietf.org/html/rfc791)
+
+0                   1                   2                   3
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+===========================================================================
+ICMP Echo / Echo Reply Message header info from RFC792
+  -> http://tools.ietf.org/html/rfc792
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |     Type      |     Code      |          Checksum             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |           Identifier          |        Sequence Number        |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |     Data ...
+    +-+-+-+-+-
+
+===========================================================================
+ICMP parameter info:
+  -> http://www.iana.org/assignments/icmp-parameters/icmp-parameters.xml
+
+===========================================================================
+An example of ping's typical output:
+
+PING heise.de (193.99.144.80): 56 data bytes
+64 bytes from 193.99.144.80: icmp_seq=0 ttl=240 time=127 ms
+64 bytes from 193.99.144.80: icmp_seq=1 ttl=240 time=127 ms
+64 bytes from 193.99.144.80: icmp_seq=2 ttl=240 time=126 ms
+64 bytes from 193.99.144.80: icmp_seq=3 ttl=240 time=126 ms
+64 bytes from 193.99.144.80: icmp_seq=4 ttl=240 time=127 ms
+
+----heise.de PING Statistics----
+5 packets transmitted, 5 packets received, 0.0% packet loss
+round-trip (ms)  min/avg/max/med = 126/127/127/127
