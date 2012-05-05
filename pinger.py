@@ -14,8 +14,17 @@ import appindicator
 
 PING_FREQUENCY = 1 # seconds
 
+
+def make_ping_object(h):
+	timeout = 500;
+	if not is_valid_ip4_address(h):
+		h = socket.gethostbyname(h)
+	return Ping(h, timeout)
+
+
 class PingIndicator:
-	def __init__(self):
+	def __init__(self, hostnames):
+		self.init_pinger(hostnames)
         	self.ind = appindicator.Indicator("salseeg's-ping-indicator",
                                             "indicator-messages",
                                             appindicator.CATEGORY_APPLICATION_STATUS)
@@ -43,49 +52,38 @@ class PingIndicator:
     	def check_mail(self):
 		# messages, unread = self.gmail_checker('myaddress@gmail.com','mypassword')
 		#if unread > 0:
-		# 	self.ind.set_status(appindicator.STATUS_ATTENTION)
-		#else:
-		#	self.ind.set_status(appindicator.STATUS_ACTIVE)
          	return True
+	def init_pinger(self, hostnames):
+		self.hostnames = hostnames
+		self.hosts = [ make_ping_object(h) for h in hostnames ]
+
 
 	def pinger(self):
-		pass
+		delays = []
+
+		i = 0
+		for h in self.hosts :
+			delay = h.do()
+			delays.append( (self.hostnames[i], delay) )
+			i += 1
+			
+	 	self.show_results(delays)
+		
 		return True
+
+	def show_results(self, delays) :
+		bad = False
+		for d in delays:
+			if d < 0 :
+				bad = True
+				break
+		if bad:
+		 	self.ind.set_status(appindicator.STATUS_ATTENTION)
+		else:
+			self.ind.set_status(appindicator.STATUS_ACTIVE)
 
 
 if __name__ == "__main__":
-     indicator = CheckGMail()
-     indicator.main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def make_ping_object(h):
-	timeout = 500;
-	if not is_valid_ip4_address(h):
-		h = socket.gethostbyname(h)
-	return Ping(h, timeout)
-
-
-def show_results(delays):
-	for tup in delays : 
-		(host, delay) = tup
-		print host, delay
-	print
-
-
-if __name__ == '__main__' :
 	hostnames = [
 		'89.185.10.2'
 		, '89.185.8.30'
@@ -98,28 +96,26 @@ if __name__ == '__main__' :
 		, '8.8.8.8'
 		, 'i.ua'
 	]
+	
+	indicator = PingIndicator(hostnames)
+     	indicator.main()
 
 
-	hosts = [ make_ping_object(h) for h in hostnames ]
 
-	while 1 :
-		iteration_start_time = time.time()
-		delays = []
 
-		i = 0
-		for h in hosts :
-			delay = h.do()
-			delays.append( (hostnames[i], delay) )
 
-#			if delay > 0 :
-#				s += chr(int(math.floor(48 + delay/10)))
-#			else:
-#				s +='-'
-			i += 1
-			
-	 	show_results(delays)
-		
-		iteration_end_time = time.time()
-		to_sleep = 0.99 - iteration_end_time + iteration_start_time
-		if (to_sleep > 0) :
-			time.sleep(to_sleep)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
