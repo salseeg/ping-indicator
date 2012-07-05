@@ -15,7 +15,7 @@ class Data_Exch :
 			f = open(self.filename, "r")
 			for line in f :
 				parts = line.strip().split(':')
-				delays.append( (parts[0], parts[1]) )
+				delays.append( (parts[0], float(parts[1])) )
 			f.close()
 			return delays
 		return false
