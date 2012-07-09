@@ -13,6 +13,11 @@
     :homepage: https://github.com/jedie/python-ping/
     :copyleft: 1989-2011 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
+
+
+    by Sergey Lukyanov (salseeg@gmail.com) :
+	- commented some output to use it as part of pinger-indicator
+
 """
 
 
@@ -290,7 +295,7 @@ class Ping(object):
         try:
             current_socket.sendto(packet, (self.destination, 1)) # Port number is irrelevant for ICMP
         except socket.error as e:
-            print("General failure (%s)" % (e.args[1]))
+		#print("General failure (%s)" % (e.args[1]))
             current_socket.close()
             return
 
