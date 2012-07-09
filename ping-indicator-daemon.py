@@ -55,9 +55,13 @@ class PingIndicatorDaemon:
 		i = 0
 		for h in self.hosts :
 			delay = h.do()
+			if delay is None :
+				delay = -1
+				sum += 500
+			else:
+				sum += delay;
 			delays.append( (self.hostnames[i], delay) )
 			i += 1
-			sum += delay;
 			
 	 	self.show_results(delays)
 		

@@ -9,6 +9,8 @@ import gtk
 import appindicator
 import data_exch
 import time
+import Image
+import os.path
 
 
 class AppIndicator (object):
@@ -32,20 +34,32 @@ class AppIndicator (object):
 		data_file = data_exch.Data_Exch()
 		data = data_file.read()
 		if data :
+			count = len(data)
+			img = Image.new("RGBA",(count*8,20))
+			i = 0;
 			for host, delay in data:
-				fn_prefix = "home/salseeg/projects/ping-appindicator/imgs/"
-				ind = int(round(delay / 50))
+				fn_prefix = "/home/salseeg/projects/ping-appindicator/imgs/"
+				if delay > 0 :
+					ind = int(delay / 50.0)
+				else:
+					ind = -1;
 				fn = 'dark_{}'.format(ind)
 				if ind > 10 : 
 					fn = 'over'
 				if ind < 0 :
 					fn = 'none'
-				
 				fn = fn_prefix + fn + '.png'
-				print fn+"\n"
-
-				self.ind.set_icon( fn )
-				time.sleep(0.2)
+				icon = Image.open(fn);
+				img.paste(icon, (i * 8, 0))
+				
+				i += 1
+			suffix = int(time.time()) % 4
+			indicator_fn = "/tmp/ping-indicator-status-{}.png".format(suffix)
+			img.save(indicator_fn)
+			self.ind.set_icon( indicator_fn )
+		return True
+		
+	
    
 
 
