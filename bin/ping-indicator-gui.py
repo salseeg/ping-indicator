@@ -2,8 +2,6 @@
 # coding: utf-8
 
 
-LOGO = "/home/salseeg/projects/ping-appindicator/imgs/over.png"
-UPDATE_TIMEOUT = 1000  # ms
 
 import gtk
 import appindicator
@@ -12,6 +10,8 @@ import time
 import Image
 import os.path
 
+LOGO = os.path.expanduser("~/.ping-indicator/imgs/over.png")
+UPDATE_TIMEOUT = 1000  # ms
 
 class AppIndicator (object):
 
@@ -38,7 +38,7 @@ class AppIndicator (object):
 			img = Image.new("RGBA",(count*8,20))
 			i = 0;
 			for host, delay in data:
-				fn_prefix = "/home/salseeg/projects/ping-appindicator/imgs/"
+				fn_prefix = os.path.expanduser("~/.ping-indicator/imgs/")
 				if delay > 0 :
 					ind = int(delay / 50.0)
 				else:
@@ -54,7 +54,7 @@ class AppIndicator (object):
 				
 				i += 1
 			suffix = int(time.time()) % 4
-			indicator_fn = "/tmp/ping-indicator-status-{}.png".format(suffix)
+			indicator_fn = "{}/ping-indicator-status-{}.png".format(os.path.expanduser("~/.ping-indicator/tmp"), suffix)
 			img.save(indicator_fn)
 			self.ind.set_icon( indicator_fn )
 		return True

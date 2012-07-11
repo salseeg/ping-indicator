@@ -8,7 +8,7 @@ import time
 
 class Data_Exch :
 	def __init__(self):
-		self.filename = "/tmp/ping-indicator.data"
+		self.filename = os.path.expanduser("~/.ping-indicator/tmp/ping-indicator.data")
 		#self.read()
 	def read(self):
 		if os.path.exists(self.filename):
@@ -20,7 +20,7 @@ class Data_Exch :
 					parts = line.strip().split(':')
 					delays.append( (parts[0], float(parts[1])) )
 				f.close()
-			else:
+			else: # indicating deamon died
 				ind = t % 4
 				delays.append( ("no", 0.1))
 				delays.append( ("fresh", 0.1))
