@@ -9,6 +9,7 @@ import data_exch
 import time
 import Image
 import os.path
+import subprocess
 
 LOGO = os.path.expanduser("~/.ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms
@@ -24,24 +25,10 @@ TMP_DIR = os.path.expanduser("~/.ping-indicator/tmp/")
 MENU_HOST_FORMAT =  "{}  : {} ms"
 MENU_HOST_SEPARATOR = "  : "
 
-def delay_to_filename(delay):
-	fn_prefix = IMAGES_DIR
-	if delay > 0 :
-		ind = int(delay / 50.0)
-	else:
-		ind = -1;
-	fn = 'dark_{}'.format(ind)
-	if ind > 10 : 
-		fn = 'over'
-	if ind < 0 :
-		fn = 'none'
-	fn = fn_prefix + fn + '.png'
-	return fn
-
 class IconCache :
 	def __init__(self):
 		self.images = dict()
-		for i in range(0,10):
+		for i in range(0,11):
 			img = Image.open(self._build_filename(i))
 			self.images[i] = img
 		self.images['none'] = Image.open(self._build_filename('none'))
@@ -55,6 +42,8 @@ class IconCache :
 		 	fn += 'dark_' + str(name) + IMAGES_EXT 
 		return fn
 	
+
+
 	def image_by_delay(self, delay):
 		if delay > 0 :
 			ind = int(delay / (MAX_PING / 10))
@@ -113,13 +102,21 @@ class AppIndicator (object):
 			i += 1
 
 
+	def clear_menu(self):
+		items = self.menu.get_children();
+		for item in items:
+			if isinstance(item, gtk.SeparatorMenuItem):
+				break
+			else:
+			 	self.menu.remove(item)
 
 	def update_menu(self, data):
-
 		items = self.menu.get_children()
 		first_one = items[0]
 		first_host, first_delay = data[0]
 		if (first_one.get_label().split(MENU_HOST_SEPARATOR)[0] != first_host) :
+			if not isinstance(first_one, gtk.SeparatorMenuItem):
+				self.clear_menu()
 			self.build_menu(data)
 			self.menu.show_all()
 		else:
@@ -133,6 +130,8 @@ class AppIndicator (object):
 		
 	
    
+
+subprocess.Popen(os.path.expanduser("~/.ping-indicator/bin/ping-indicator-deamon-wrapper"))
 
 
 indicator = AppIndicator()
