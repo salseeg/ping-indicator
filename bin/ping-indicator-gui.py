@@ -4,17 +4,21 @@
 
 
 import gtk
+import gtk.glade
 import appindicator
 import data_exch
 import time
 import Image
 import os.path
 import subprocess
+import conf
 
 LOGO = os.path.expanduser("~/.ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms
 
 MAX_PING = 100 # ms
+
+BIN_DIR = os.path.expanduser("~/.ping-indicator/bin/")
 
 IMAGES_DIR = os.path.expanduser("~/.ping-indicator/imgs/")
 IMAGES_EXT = '.png'
@@ -23,6 +27,7 @@ IMAGES_INDICATOR_FORMAT = "{}ping-indicator-status-{}.png"
 TMP_DIR = os.path.expanduser("~/.ping-indicator/tmp/")
 
 MENU_HOST_FORMAT =  "{}  : {} ms"
+MENU_HOST_FORMAT_NONE =  "{}  : -- n/a --"
 MENU_HOST_SEPARATOR = "  : "
 
 class IconCache :
@@ -51,7 +56,11 @@ class IconCache :
 				ind = 'over'
 		else:
 			ind = 'none'
-		return self.images[ind]
+        
+		try:
+            		return self.images[ind]
+		except: 
+            		return False
 	
 
 
@@ -59,20 +68,64 @@ class IconCache :
 class AppIndicator (object):
 
     	def __init__(self):
+		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-deamon-wrapper"))
+
 		self.icons = IconCache();
-        	self.ind = appindicator.Indicator("ping-indicator-applet",
-        	    LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
+        	self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
         	self.ind.set_status (appindicator.STATUS_ACTIVE)
-		self.menu = gtk.Menu()
-		sep = gtk.SeparatorMenuItem()
+        	self.menu = gtk.Menu()
+        	sep = gtk.SeparatorMenuItem()
+		pref_item = gtk.MenuItem()
+		pref_item.add(gtk.Label("Preferences"))
+		pref_item.connect("activate", self.show_prefs)
 		item = gtk.MenuItem()
 		item.add(gtk.Label("exit"))
-
+		item.connect("activate", self.exit)
+	
 		self.menu.append(sep)
+		self.menu.append(pref_item)
 		self.menu.append(item)
 		self.menu.show_all()
 		self.ind.set_menu(self.menu)
 		gtk.timeout_add(UPDATE_TIMEOUT, self.update)
+
+	def show_prefs(self, obj):
+		self.pref_tree = gtk.glade.XML("conf.glade", "dialog1")
+		window = self.pref_tree.get_widget("dialog1")
+		# window.connect("delete_event", gtk.main_quit)
+		data_file = data_exch.Data_Exch()
+		data = data_file.read()
+		text = ""
+		for host, dalay in data:
+			text += host + "\n"
+		
+		tw = self.pref_tree.get_widget("hosts__textview")
+		buf = tw.get_buffer()
+		buf.set_text(text)
+		self.pref_tree.get_widget("cancel__button").connect("clicked", self.close_prefs)
+		self.pref_tree.get_widget("ok__button").connect("clicked", self.apply_prefs)
+		window.show_all()
+
+	def close_prefs(self, obj):
+		window = self.pref_tree.get_widget("dialog1")
+		window.destroy()
+
+	def apply_prefs(self, obj):
+		buf = self.pref_tree.get_widget("hosts__textview").get_buffer()
+		text = buf.get_text(buf.get_start_iter(), buf.get_end_iter())
+		c = conf.Conf()
+		c.set_servers(text)
+		self.restart_deamon()
+		
+		self.close_prefs(obj)
+		
+	def restart_deamon(self):
+		self.daemon.terminate()
+		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-deamon-wrapper"))
+
+	def exit(self, obj):
+		self.daemon.terminate()
+		gtk.main_quit()
 
 	def update(self):
 		data_file = data_exch.Data_Exch()
@@ -97,7 +150,10 @@ class AppIndicator (object):
 		i = 0;
 		for host, delay in data:
 			item = gtk.MenuItem()
-			item.add(gtk.Label(MENU_HOST_FORMAT.format(host, round(delay,1))))
+			if delay > 0 :
+				item.add(gtk.Label(MENU_HOST_FORMAT.format(host, round(delay,1))))
+			else: 
+				item.add(gtk.Label(MENU_HOST_FORMAT_NONE.format(host)))
 			self.menu.insert(item, i)
 			i += 1
 
@@ -123,15 +179,16 @@ class AppIndicator (object):
 			i = 0
 			for host, delay in data:
 				item = items[i]
-				item.set_label(MENU_HOST_FORMAT.format(host, round(delay,1)))
+				if delay > 0 :
+					item.set_label(MENU_HOST_FORMAT.format(host, round(delay,1)))
+				else: 
+					item.set_label(MENU_HOST_FORMAT_NONE.format(host))
 				i += 1
 
 		self.ind.set_menu(self.menu)
 		
 	
    
-
-subprocess.Popen(os.path.expanduser("~/.ping-indicator/bin/ping-indicator-deamon-wrapper"))
 
 
 indicator = AppIndicator()

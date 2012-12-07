@@ -20,6 +20,7 @@ class Conf :
 		else:
 		 	self.servers = ["8.8.8.8", "google.com", "ya.ru"]
 		return self.servers
+
 	def write(self):
 		if os.path.exists(os.path.dirname(self.filename)):
 			pass
@@ -30,6 +31,15 @@ class Conf :
 		for s in self.servers:
 			f.write(s + "\n");
 		f.close()
+
+	def set_servers(self, text):
+		self.servers = []
+		strs = text.split("\n")
+		for s in strs:
+			s = s.strip()
+			if s != "" :
+				self.servers.append(s)
+		self.write()
 
 
 
