@@ -18,7 +18,8 @@ class Data_Exch :
 				f = open(self.filename, "r")
 				for line in f :
 					parts = line.strip().split(':')
-					delays.append( (parts[0], float(parts[1])) )
+					if len(parts) > 1 :
+						delays.append( (parts[0], float(parts[1])) )
 				f.close()
 			else: # indicating deamon died
 				ind = t % 4
