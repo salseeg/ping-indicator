@@ -90,7 +90,7 @@ class AppIndicator (object):
 		gtk.timeout_add(UPDATE_TIMEOUT, self.update)
 
 	def show_prefs(self, obj):
-		self.pref_tree = gtk.glade.XML("conf.glade", "dialog1")
+		self.pref_tree = gtk.glade.XML(BIN_DIR + "conf.glade", "dialog1")
 		window = self.pref_tree.get_widget("dialog1")
 		# window.connect("delete_event", gtk.main_quit)
 		data_file = data_exch.Data_Exch()

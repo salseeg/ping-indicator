@@ -16,7 +16,7 @@
 
 
     by Sergey Lukyanov (salseeg@gmail.com) :
-	- commented some output to use it as part of pinger-indicator
+	- commented some output to use it as part of ping-indicator
 
 """
 

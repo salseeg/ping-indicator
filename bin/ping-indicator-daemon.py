@@ -8,6 +8,9 @@ import socket
 import conf
 import data_exch
 import signal
+import threading
+import Queue
+import random
 
 
 
@@ -17,26 +20,76 @@ PING_FREQUENCY = 1 # HZ
 
 
 def signal_handler(a,b):
+	global deamon
+	deamon.quit()
 	sys.exit(0)
 
 
-def make_ping_object(h):
+def make_ping_object(h, ping_id):
 	timeout = 500;
 	if not is_valid_ip4_address(h):
-		h = socket.gethostbyname(h)
-	return Ping(h, timeout)
+		try:
+			h = socket.gethostbyname(h)
+		except:
+			return False
+	# print "ping_id = {}\n".format(ping_id)
+	return Ping(h, timeout, own_id = ping_id)
+
+
+class PingThread(threading.Thread):
+	def __init__(self, hostname, queue, quit_event, thread_id):
+		threading.Thread.__init__(self)
+		self.q = queue
+		self.hostname = hostname
+		self.host = make_ping_object(hostname, thread_id)
+		self.quit_event = quit_event
+		self.thread_id = thread_id
+		self.counter = random.randint(900,1800)
+
+
+
+	def run(self):
+		while not self.quit_event.is_set() :
+			if self.counter < 0 :
+				self.host = make_ping_object(self.hostname, self.thread_id)
+				self.counter = random.randint(900,1800)				
+			try: 
+				delay = self.host.do()
+				self.q.put((self.hostname, delay))
+			except:
+				self.q.put((self.hostname, -1))
+				delay = 10
+			to_sleep = 1000 / PING_FREQUENCY;
+			to_sleep -= delay
+			to_sleep = max(to_sleep, 0)
+			self.counter -= 1
+			time.sleep(to_sleep/1000)
+
+
+	
 
 
 class PingIndicatorDaemon:
 	def __init__(self, hostnames):
+		self.quit_event = threading.Event()
+		self.quit_event.clear()
 		self.init_pinger(hostnames)
 
 
 	def main(self):
-		while True :
+		time.sleep(0.200)
+		while not self.quit_event.is_set() :
+			delays = dict([ (h, -1)  for h in self.hostnames ])
+			while True :
+				try :
+					(host, delay) = self.q.get_nowait()
+					delays[host] = delay
+				except Queue.Empty :
+					break
+
+			self.show_results([(h, delays[h]) for h in self.hostnames ])
+
 			to_sleep = 1000 / PING_FREQUENCY;
-        		used = self.pinger()
-			to_sleep -= used
 			to_sleep = max(to_sleep, 0)
 			time.sleep(to_sleep/1000)
 
@@ -45,7 +98,11 @@ class PingIndicatorDaemon:
 
 	def init_pinger(self, hostnames):
 		self.hostnames = hostnames
-		self.hosts = [ make_ping_object(h) for h in hostnames ]
+		self.q = Queue.Queue()
+		# self.hosts = [ make_ping_object(h) for h in hostnames ]
+		self.hosts = []
+		self.threads = [ PingThread(h, self.q, self.quit_event, random.randint(333, 32333)) for h in hostnames ]
+		[t.start() for t in self.threads ]
 
 
 	def pinger(self):
@@ -70,6 +127,10 @@ class PingIndicatorDaemon:
 	def show_results(self, delays) :
 		data = data_exch.Data_Exch()
 		data.write(delays)
+
+	def quit(self):
+		self.quit_event.set();
+
 
 
 if __name__ == "__main__":
