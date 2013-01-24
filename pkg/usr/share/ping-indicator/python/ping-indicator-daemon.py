@@ -10,6 +10,9 @@ import Queue
 import random
 import sys
 
+
+sys.path.append('/usr/share/ping-indicator/python/')
+
 from ping import Ping, is_valid_ip4_address 
 import conf
 import data_exch

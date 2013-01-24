@@ -12,21 +12,24 @@ import os.path
 import subprocess
 
 
+sys.path.append('/usr/share/ping-indicator/python/')
+
 import data_exch
 import conf
 
-LOGO = os.path.expanduser("~/.ping-indicator/imgs/over.png")
+LOGO = os.path.expanduser("/usr/share/ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms
 
 MAX_PING = 100 # ms
 
-BIN_DIR = os.path.expanduser("~/.ping-indicator/bin/")
+BIN_DIR = os.path.expanduser("/usr/bin/")
+UI_DIR = os.path.expanduser("/usr/share/ping-indicator/ui/")
 
-IMAGES_DIR = os.path.expanduser("~/.ping-indicator/imgs/")
+IMAGES_DIR = os.path.expanduser("/usr/share/ping-indicator/imgs/")
 IMAGES_EXT = '.png'
 IMAGES_THEME = 'dark'
 IMAGES_INDICATOR_FORMAT = "{}ping-indicator-status-{}.png"
-TMP_DIR = os.path.expanduser("~/.ping-indicator/tmp/")
+TMP_DIR = os.path.expanduser("/tmp/")
 
 MENU_HOST_FORMAT =  "{}  : {} ms"
 MENU_HOST_FORMAT_NONE =  "{}  : -- n/a --"
@@ -92,7 +95,7 @@ class AppIndicator (object):
 		gtk.timeout_add(UPDATE_TIMEOUT, self.update)
 
 	def show_prefs(self, obj):
-		self.pref_tree = gtk.glade.XML(BIN_DIR + "conf.glade", "dialog1")
+		self.pref_tree = gtk.glade.XML(UI_DIR + "conf.glade", "dialog1")
 		window = self.pref_tree.get_widget("dialog1")
 		# window.connect("delete_event", gtk.main_quit)
 		data_file = data_exch.Data_Exch()
