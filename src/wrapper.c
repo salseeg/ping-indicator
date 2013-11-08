@@ -7,8 +7,16 @@
 
 
 int main(int argc, char ** argv){
-	char ** empty;
+	char user[80] = "\0" ;
+
+	if (argc > 1){
+		strncpy(user, argv[1], sizeof(user) -1);
 	
-	execv(RELPATH, empty);
-	return 0;
+		execv(RELPATH, (char* const* ) user);
+		//printf("%s\n", user);
+		return 0;
+	}else{
+
+		return -1;
+	}
 }
