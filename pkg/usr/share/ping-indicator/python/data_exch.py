@@ -31,7 +31,7 @@ class Data_Exch :
 				delays[ind] = (host, 10000)
 
 			return delays
-		return false
+		return False
 	def write(self, delays):
 
 		f = open(self.filename, "w")

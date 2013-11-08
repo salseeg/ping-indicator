@@ -117,6 +117,8 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 	signal.signal(signal.SIGHUP, signal_handler)
 	c = conf.Conf()
+
+	#print vars(c);
 	
 	daemon = PingIndicatorDaemon(c.servers)
      	daemon.main()

@@ -10,6 +10,7 @@ import time
 import Image
 import os.path
 import subprocess
+import sys
 
 
 sys.path.append('/usr/share/ping-indicator/python/')
@@ -73,7 +74,8 @@ class IconCache :
 class AppIndicator (object):
 
     	def __init__(self):
-		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-daemon-wrapper"))
+		self.conf = conf.Conf();
+		self.start_deamon()
 
 		self.icons = IconCache();
         	self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
@@ -93,6 +95,10 @@ class AppIndicator (object):
 		self.menu.show_all()
 		self.ind.set_menu(self.menu)
 		gtk.timeout_add(UPDATE_TIMEOUT, self.update)
+
+	def start_deamon(self):
+		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-daemon-wrapper "+self.conf.filename))
+
 
 	def show_prefs(self, obj):
 		self.pref_tree = gtk.glade.XML(UI_DIR + "conf.glade", "dialog1")
@@ -126,7 +132,7 @@ class AppIndicator (object):
 		
 	def restart_deamon(self):
 		self.daemon.terminate()
-		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-deamon-wrapper"))
+		self.start_deamon()
 
 	def exit(self, obj):
 		self.daemon.terminate()
