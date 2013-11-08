@@ -71,8 +71,9 @@ class PingThread(threading.Thread):
 
 
 class PingIndicatorDaemon:
-	def __init__(self, hostnames):
+	def __init__(self, hostnames, user):
 		self.hostnames = hostnames
+		self.user = user
 		self.quit_event = threading.Event()
 		self.quit_event.clear()
 		self.q = Queue.Queue()	
@@ -105,7 +106,7 @@ class PingIndicatorDaemon:
 
 
 	def show_results(self, delays) :
-		data = data_exch.Data_Exch()
+		data = data_exch.Data_Exch(self.user)
 		data.write(delays)
 
 	def quit(self):
@@ -114,14 +115,18 @@ class PingIndicatorDaemon:
 
 
 if __name__ == "__main__":
-	signal.signal(signal.SIGINT, signal_handler)
-	signal.signal(signal.SIGHUP, signal_handler)
-	c = conf.Conf()
+	user = sys.argv[1]
 
-	#print vars(c);
+	if len(user) > 0 :
+		signal.signal(signal.SIGINT, signal_handler)
+		signal.signal(signal.SIGHUP, signal_handler)
+
+
+		c = conf.Conf(user)
+
 	
-	daemon = PingIndicatorDaemon(c.servers)
-     	daemon.main()
+		daemon = PingIndicatorDaemon(c.servers, user)
+     		daemon.main()
 
 
 

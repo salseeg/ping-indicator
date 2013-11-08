@@ -7,8 +7,8 @@ import time
 
 
 class Data_Exch :
-	def __init__(self):
-		self.filename = os.path.expanduser("/tmp/ping-indicator.data")
+	def __init__(self, user):
+		self.filename = os.path.expanduser("/tmp/ping-indicator-" + user + ".data")
 		#self.read()
 	def read(self):
 		if os.path.exists(self.filename):
