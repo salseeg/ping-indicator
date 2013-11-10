@@ -1,5 +1,5 @@
 Package: ping-indicator
-Version: 0.99-12
+Version: 0.99-23
 Maintainer: Sergey Lukyanov <salseeg@gmail.com>
 Architecture: i386
 Section: net

@@ -1,4 +1,4 @@
-.PHONY : all suid
+.PHONY : all suid into_pkg
 
 all: ping-indicator-daemon-wrapper
 
@@ -9,3 +9,7 @@ ping-indicator-daemon-wrapper: wrapper.c
 suid: ping-indicator-daemon-wrapper
 	chown root ping-indicator-daemon-wrapper
 	chmod +s ping-indicator-daemon-wrapper
+
+into_pkg: all
+	cp ping-indicator-daemon-wrapper ../pkg/usr/bin/
+

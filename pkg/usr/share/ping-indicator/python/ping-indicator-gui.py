@@ -11,6 +11,7 @@ import Image
 import os.path
 import subprocess
 import sys
+import math
 
 
 sys.path.append('/usr/share/ping-indicator/python/')
@@ -21,7 +22,7 @@ import conf
 LOGO = os.path.expanduser("/usr/share/ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms
 
-MAX_PING = 100 # ms
+#MAX_PING = 100 # ms
 
 BIN_DIR = os.path.expanduser("/usr/bin/")
 UI_DIR = os.path.expanduser("/usr/share/ping-indicator/ui/")
@@ -29,7 +30,7 @@ UI_DIR = os.path.expanduser("/usr/share/ping-indicator/ui/")
 IMAGES_DIR = os.path.expanduser("/usr/share/ping-indicator/imgs/")
 IMAGES_EXT = '.png'
 IMAGES_THEME = 'dark'
-IMAGES_INDICATOR_FORMAT = "{}ping-indicator-status-{}.png"
+IMAGES_INDICATOR_FORMAT = "{}ping-indicator-{}-status-{}.png"
 TMP_DIR = os.path.expanduser("/tmp/")
 
 MENU_HOST_FORMAT =  "{}  : {} ms"
@@ -57,7 +58,7 @@ class IconCache :
 
 	def image_by_delay(self, delay):
 		if delay > 0 :
-			ind = int(delay / (MAX_PING / 10))
+			ind = int(min( delay / 10 , math.log(delay + 1.643, 1.643) - 1.643));
 			if ind > 10 :
 				ind = 'over'
 		else:
@@ -74,8 +75,13 @@ class IconCache :
 class AppIndicator (object):
 
     	def __init__(self):
-		self.conf = conf.Conf();
-		self.start_deamon()
+		path = os.path.expanduser('~');
+		# print path;
+		p, user = os.path.split(path);
+		# print "user = {}\n".format(user);
+		self.user = user;
+		self.conf = conf.Conf(self.user);
+		self.start_deamon();
 
 		self.icons = IconCache();
         	self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
@@ -97,14 +103,14 @@ class AppIndicator (object):
 		gtk.timeout_add(UPDATE_TIMEOUT, self.update)
 
 	def start_deamon(self):
-		self.daemon = subprocess.Popen(os.path.expanduser(BIN_DIR+"ping-indicator-daemon-wrapper "+self.conf.filename))
+		self.daemon = subprocess.Popen([os.path.expanduser(BIN_DIR+"ping-indicator-daemon-wrapper") , self.user]);
 
 
 	def show_prefs(self, obj):
 		self.pref_tree = gtk.glade.XML(UI_DIR + "conf.glade", "dialog1")
 		window = self.pref_tree.get_widget("dialog1")
 		# window.connect("delete_event", gtk.main_quit)
-		data_file = data_exch.Data_Exch()
+		data_file = data_exch.Data_Exch(self.user)
 		data = data_file.read()
 		text = ""
 		for host, dalay in data:
@@ -124,7 +130,7 @@ class AppIndicator (object):
 	def apply_prefs(self, obj):
 		buf = self.pref_tree.get_widget("hosts__textview").get_buffer()
 		text = buf.get_text(buf.get_start_iter(), buf.get_end_iter())
-		c = conf.Conf()
+		c = conf.Conf(self.user)
 		c.set_servers(text)
 		self.restart_deamon()
 		
@@ -139,7 +145,7 @@ class AppIndicator (object):
 		gtk.main_quit()
 
 	def update(self):
-		data_file = data_exch.Data_Exch()
+		data_file = data_exch.Data_Exch(self.user)
 		data = data_file.read()
 		if data :
 			count = len(data)
@@ -151,7 +157,7 @@ class AppIndicator (object):
 				i += 1
 
 			suffix = int(time.time()) % 4
-			indicator_fn = IMAGES_INDICATOR_FORMAT.format(TMP_DIR, suffix)
+			indicator_fn = IMAGES_INDICATOR_FORMAT.format(TMP_DIR, self.user, suffix)
 			img.save(indicator_fn)
 			self.ind.set_icon( indicator_fn )
 			self.update_menu(data)

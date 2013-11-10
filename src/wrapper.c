@@ -7,16 +7,18 @@
 
 
 int main(int argc, char ** argv){
-	char user[80] = "\0" ;
+	char * user = NULL ;
+	user = malloc(100);
+	printf("argc = %d\n", argc);
 
 	if (argc > 1){
-		strncpy(user, argv[1], sizeof(user) -1);
+		strncpy(user, argv[1], 80);
+		char *const parmList[] = {RELPATH, user, NULL};
 	
-		execv(RELPATH, (char* const* ) user);
 		//printf("%s\n", user);
+		execv(RELPATH,  parmList);
 		return 0;
 	}else{
-
 		return -1;
 	}
 }
