@@ -3,17 +3,17 @@
 
 
 
-import gtk
-import gtk.glade
-import appindicator
-import time
 import Image
+import appindicator
+import gtk
 import os.path
 import subprocess
+import time
 
+import conf
+import gtk.glade
 
 import data_exch
-import conf
 
 LOGO = os.path.expanduser("~/.ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms

@@ -61,7 +61,7 @@ def calculate_checksum(source_string):
     loByte = 0
     hiByte = 0
     while count < countTo:
-        if (sys.byteorder == "little"):
+        if sys.byteorder == "little":
             loByte = source_string[count]
             hiByte = source_string[count + 1]
         else:

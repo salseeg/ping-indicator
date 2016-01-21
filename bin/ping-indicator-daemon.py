@@ -1,18 +1,18 @@
 #!/usr/bin/env python
 
 
-import time
-import math
-import socket
-import signal
-import threading
 import Queue
 import random
+import signal
+import socket
 import sys
+import threading
+import time
 
-from ping import Ping, is_valid_ip4_address 
 import conf
+
 import data_exch
+from ping import Ping, is_valid_ip4_address
 
 PING_FREQUENCY = 1 # HZ
 
