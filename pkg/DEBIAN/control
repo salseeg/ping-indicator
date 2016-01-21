@@ -1,5 +1,5 @@
 Package: ping-indicator
-Version: 0.99-23
+Version: 0.99-24
 Maintainer: Sergey Lukianov <salseeg@gmail.com>
 Architecture: amd64
 Section: net

@@ -6,7 +6,7 @@ import os
 
 
 class Conf:
-    def __init__(self):
+    def __init__(self, user):
         self.filename = os.path.expanduser("~/.ping-indicator/conf")
         self.servers = []
         self.read()
