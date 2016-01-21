@@ -11,5 +11,5 @@ suid: ping-indicator-daemon-wrapper
 	chmod +s ping-indicator-daemon-wrapper
 
 into_pkg: all
-	cp ping-indicator-daemon-wrapper ../pkg/usr/bin/
+	mv ping-indicator-daemon-wrapper ../pkg/usr/bin/
 

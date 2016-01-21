@@ -1,7 +1,7 @@
 Package: ping-indicator
 Version: 0.99-23
-Maintainer: Sergey Lukyanov <salseeg@gmail.com>
-Architecture: i386
+Maintainer: Sergey Lukianov <salseeg@gmail.com>
+Architecture: amd64
 Section: net
 Depends: python(>=2.6), python-appindicator, python-glade2
 Installed-Size: 100
