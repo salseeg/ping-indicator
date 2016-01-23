@@ -2,7 +2,7 @@
 
 
 import time
-import math
+# import math
 import socket
 import signal
 import threading
@@ -10,16 +10,17 @@ import Queue
 import random
 import sys
 
-sys.path.append('/usr/share/ping-indicator/python/')
-
 from ping import Ping, is_valid_ip4_address
 import conf
 import data_exch
 
+sys.path.append('/usr/share/ping-indicator/python/')
+
+
 PING_FREQUENCY = 1  # HZ
 
 
-def signal_handler(a, b):
+def signal_handler():
     global daemon
     daemon.quit()
     sys.exit(0)
@@ -53,7 +54,11 @@ class PingThread(threading.Thread):
                 self.counter = random.randint(900, 1800)
             try:
                 delay = self.host.do()
-                self.q.put((self.hostname, delay))
+                if delay is None:
+                    delay = 10
+                    self.q.put((self.hostname, -1))
+                else:
+                    self.q.put((self.hostname, delay))
             except:
                 self.q.put((self.hostname, -1))
                 delay = 10
@@ -91,10 +96,9 @@ class PingIndicatorDaemon:
             to_sleep = max(to_sleep, 0)
             time.sleep(to_sleep / 1000)
 
-
-        # def init_pinger(self, hostnames):
-        # self.hosts = [ make_ping_object(h) for h in hostnames ]
-        # self.hosts = []
+            # def init_pinger(self, hostnames):
+            # self.hosts = [ make_ping_object(h) for h in hostnames ]
+            # self.hosts = []
 
     def show_results(self, delays):
         data = data_exch.Data_Exch(self.user)
