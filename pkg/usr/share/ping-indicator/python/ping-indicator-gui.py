@@ -70,16 +70,17 @@ class IconCache:
 
 class AppIndicator(object):
     def __init__(self):
-        path = os.path.expanduser('~');
+        path = os.path.expanduser('~')
         # print path;
-        p, user = os.path.split(path);
+        p, user = os.path.split(path)
         # print "user = {}\n".format(user);
-        self.user = user;
-        self.conf = conf.Conf(self.user);
-        self.start_deamon();
+        self.user = user
+        self.conf = conf.Conf(self.user)
+        self.start_deamon()
 
-        self.icons = IconCache();
-        self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
+        self.icons = IconCache()
+        # self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_APPLICATION_STATUS)
+        self.ind = appindicator.Indicator("ping-indicator-applet", LOGO, appindicator.CATEGORY_COMMUNICATIONS)
         self.ind.set_status(appindicator.STATUS_ACTIVE)
         self.menu = gtk.Menu()
         sep = gtk.SeparatorMenuItem()
@@ -143,11 +144,11 @@ class AppIndicator(object):
         data = data_file.read()
         if data:
             count = len(data)
-            img = Image.new("RGBA", (count * 8, 20))
+            img = Image.new("RGBA", (count * 8, 22))
             i = 0;
             for host, delay in data:
                 icon = self.icons.image_by_delay(delay)
-                img.paste(icon, (i * 8, 0))
+                img.paste(icon, (i * 8, 1))
                 i += 1
 
             suffix = int(time.time()) % 4
