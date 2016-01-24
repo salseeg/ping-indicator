@@ -10,4 +10,4 @@ It still has its rough edges and unimplemented parts, but does the job:
 
 Star/Watch the project to encourage further improvements.
 
-The latest .deb package available at http://salseeg.github.io/ping-indicator/
+The latest .deb package is available at http://salseeg.github.io/ping-indicator/
