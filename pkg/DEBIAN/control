@@ -1,9 +1,11 @@
 Package: ping-indicator
-Version: 0.99-28
+Version: 0.99-30
 Maintainer: Sergey Lukianov <salseeg@gmail.com>
 Architecture: amd64
 Section: net
-Depends: python(>=2.6), python-appindicator, python-glade2
+Depends: python(>=2.6), python-appindicator, python-glade2, python-imaging, libc
 Installed-Size: 100
 Description: link monitor for Unity
- Ping-indicator is Unity indicator to show hosts connectivity.
+ Ping-indicator is Unity indicator to show host connectivity.
+ http://salseeg.github.io/ping-indicator/
+

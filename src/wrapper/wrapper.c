@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define RELPATH "/usr/share/ping-indicator/python/ping-indicator-daemon.py"
+#define REAL_PATH "/usr/share/ping-indicator/python/ping-indicator-daemon.py"
 
 
 int main(int argc, char ** argv){
@@ -13,10 +13,10 @@ int main(int argc, char ** argv){
 
 	if (argc > 1){
 		strncpy(user, argv[1], 80);
-		char *const parmList[] = {RELPATH, user, NULL};
+		char *const parmList[] = {REAL_PATH, user, NULL};
 	
 		//printf("%s\n", user);
-		execv(RELPATH,  parmList);
+		execv(REAL_PATH,  parmList);
 		return 0;
 	}else{
 		return -1;
