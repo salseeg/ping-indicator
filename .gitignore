@@ -3,3 +3,4 @@
 */*.pyc
 */*/*.pyc
 *.deb
+pkg/usr/
