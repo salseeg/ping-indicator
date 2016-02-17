@@ -2,12 +2,22 @@
 
 SHELL=/bin/bash
 CURRENT_VERSION := $(shell cat pkg/DEBIAN/control | grep Version: | cut -f 2 -d ' ')
+CURRENT_DATE := $(shell date -R )
 
 all: check_deb
 
 prepare_pkg: clean
 	mkdir -p pkg/usr/bin pkg/usr/share/ping-indicator pkg/usr/share/doc/ping-indicator
-	git log --pretty=oneline | gzip --best > pkg/usr/share/doc/ping-indicator/changelog.Debian.gz		 
+	echo "ping-indicator ($(CURRENT_VERSION)) trusty ; urgency=low" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	git log --pretty=format:" * %s" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo " -- Sergey Lukianov <salseeg@gmail.com>  $(CURRENT_DATE)" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo "Old Changelog:" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
+	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian	 
 	$(MAKE) -C src/wrapper/ into_pkg
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	cp -r imgs pkg/usr/share/ping-indicator/
