@@ -6,7 +6,8 @@ CURRENT_VERSION := $(shell cat pkg/DEBIAN/control | grep Version: | cut -f 2 -d 
 all: check_deb
 
 prepare_pkg: clean
-	mkdir -p pkg/usr/bin pkg/usr/share/ping-indicator 
+	mkdir -p pkg/usr/bin pkg/usr/share/ping-indicator pkg/usr/share/doc/ping-indicator
+	git log --pretty=oneline | gzip --best > pkg/usr/share/doc/ping-indicator/changelog.Debian.gz		 
 	$(MAKE) -C src/wrapper/ into_pkg
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	cp -r imgs pkg/usr/share/ping-indicator/
