@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-
 import gtk
 import gtk.glade
 import appindicator
@@ -13,10 +11,11 @@ import subprocess
 import sys
 import math
 
-sys.path.append('/usr/share/ping-indicator/python/')
-
 import data_exch
 import conf
+
+sys.path.append('/usr/share/ping-indicator/python/')
+
 
 LOGO = os.path.expanduser("/usr/share/ping-indicator/imgs/over.png")
 UPDATE_TIMEOUT = 1000  # ms
@@ -56,7 +55,7 @@ class IconCache:
 
     def image_by_delay(self, delay):
         if delay > 0:
-            ind = int(min(delay / 10, math.log(delay + 1.643, 1.643) - 1.643));
+            ind = int(min(delay / 10, math.log(delay + 1.643, 1.643) - 1.643))
             if ind > 10:
                 ind = 'over'
         else:
@@ -74,8 +73,10 @@ class AppIndicator(object):
         # print path;
         p, user = os.path.split(path)
         # print "user = {}\n".format(user);
+        self.needToRebuildMenu = True
         self.user = user
         self.conf = conf.Conf(self.user)
+        self.daemon = None
         self.start_deamon()
 
         self.icons = IconCache()
@@ -99,7 +100,7 @@ class AppIndicator(object):
         gtk.timeout_add(UPDATE_TIMEOUT, self.update)
 
     def start_deamon(self):
-        self.daemon = subprocess.Popen([os.path.expanduser(BIN_DIR + "ping-indicator-daemon-wrapper"), self.user]);
+        self.daemon = subprocess.Popen([os.path.expanduser(BIN_DIR + "ping-indicator-daemon-wrapper"), self.user])
 
     def show_prefs(self, obj):
         self.pref_tree = gtk.glade.XML(UI_DIR + "conf.glade", "dialog1")
@@ -128,8 +129,8 @@ class AppIndicator(object):
         c = conf.Conf(self.user)
         c.set_servers(text)
         self.restart_deamon()
-
         self.close_prefs(obj)
+        self.needToRebuildMenu = True
 
     def restart_deamon(self):
         self.daemon.terminate()
@@ -145,7 +146,7 @@ class AppIndicator(object):
         if data:
             count = len(data)
             img = Image.new("RGBA", (count * 8, 22))
-            i = 0;
+            i = 0
             for host, delay in data:
                 icon = self.icons.image_by_delay(delay)
                 img.paste(icon, (i * 8, 1))
@@ -159,7 +160,7 @@ class AppIndicator(object):
         return True
 
     def build_menu(self, data):
-        i = 0;
+        i = 0
         for host, delay in data:
             item = gtk.MenuItem()
             if delay > 0:
@@ -170,7 +171,7 @@ class AppIndicator(object):
             i += 1
 
     def clear_menu(self):
-        items = self.menu.get_children();
+        items = self.menu.get_children()
         for item in items:
             if isinstance(item, gtk.SeparatorMenuItem):
                 break
@@ -178,26 +179,27 @@ class AppIndicator(object):
                 self.menu.remove(item)
 
     def update_menu(self, data):
-        items = self.menu.get_children()
-        first_one = items[0]
-        first_host, first_delay = data[0]
-        if (first_one.get_label().split(MENU_HOST_SEPARATOR)[0] != first_host):
-            if not isinstance(first_one, gtk.SeparatorMenuItem):
-                self.clear_menu()
+        # first_one = items[0]
+        # first_host, first_delay = data[0]
+        if self.needToRebuildMenu:
+            # or first_one.get_label().split(MENU_HOST_SEPARATOR)[0] != first_host:
+            # if not isinstance(first_one, gtk.SeparatorMenuItem):
+            self.clear_menu()
             self.build_menu(data)
             self.menu.show_all()
+            self.needToRebuildMenu = False
         else:
+            items = self.menu.get_children()
             i = 0
-            for host, delay in data:
+            for host, responseTime in data:
                 item = items[i]
-                if delay > 0:
-                    item.set_label(MENU_HOST_FORMAT.format(host, round(delay, 1)))
+                if responseTime > 0:
+                    item.set_label(MENU_HOST_FORMAT.format(host, round(responseTime, 1)))
                 else:
                     item.set_label(MENU_HOST_FORMAT_NONE.format(host))
                 i += 1
 
         self.ind.set_menu(self.menu)
-
 
 indicator = AppIndicator()
 gtk.main()

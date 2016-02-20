@@ -29,7 +29,7 @@ prepare_pkg: clean prepare_pkg_dir
 	$(MAKE) -C src/wrapper/ into_pkg
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	cp -r imgs pkg/usr/share/ping-indicator/
-	chmod 755 pkg/usr pkg/usr/bin pkg/usr/share pkg/usr/share/ping-indicator \
+	sudo chmod 755 pkg/usr pkg/usr/bin pkg/usr/share pkg/usr/share/ping-indicator \
 			pkg/usr/share/ping-indicator/python \
 			pkg/usr/share/ping-indicator/imgs \
 			pkg/usr/share/ping-indicator/ui \
@@ -40,8 +40,9 @@ prepare_pkg: clean prepare_pkg_dir
 			pkg/usr/bin/ping-indicator-daemon-wrapper \
 			pkg/usr/share/ping-indicator/python/ping-indicator-gui.py \
 			pkg/usr/share/ping-indicator/python/ping-indicator-daemon.py \
+			pkg/DEBIAN/post* \
 			pkg/usr/share/ping-indicator/ui
-	chmod 644 pkg/usr/share/ping-indicator/imgs/* \
+	sudo chmod 644 pkg/usr/share/ping-indicator/imgs/* \
 			pkg/usr/share/ping-indicator/python/ping.py \
 			pkg/usr/share/ping-indicator/python/data_exch.py \
 			pkg/usr/share/ping-indicator/python/conf.py \
@@ -50,7 +51,7 @@ prepare_pkg: clean prepare_pkg_dir
 			pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1.gz \
 			pkg/usr/share/ping-indicator/ui/conf.glade
 	strip pkg/usr/bin/ping-indicator-daemon-wrapper
-	sudo chown -R root:root pkg/usr 
+	sudo chown -R root:root pkg/usr pkg/DEBIAN/post*
 
 pkg: prepare_pkg
 	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION).deb
