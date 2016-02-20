@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 ln -s /usr/share/ping-indicator/python/ping-indicator-gui.py /usr/bin/ping-indicator
 chown root /usr/bin/ping-indicator-daemon-wrapper

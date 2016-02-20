@@ -1,0 +1,11 @@
+ping-indicator (0.99-31) unstable; urgency=medium
+
+  * fixing packaging 
+
+ -- Sergey Lukianov <salseeg@gmail.com>  Sat, 20 Feb 2016 08:18:08 +0200
+
+ping-indicator (0.99-30) unstable; urgency=medium
+
+  * Initial release. (Closes: #3)
+
+ -- Sergey Lukianov <salseeg@gmail.com>  Sat, 20 Feb 2016 07:47:56 +0200

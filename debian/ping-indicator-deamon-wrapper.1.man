@@ -1,0 +1,16 @@
+.\"Created with GNOME Manpages Editor Wizard
+.\"http://sourceforge.net/projects/gmanedit2
+.TH ping-indicator-daemon-wrapper 1 "February 20, 2016" "" "ping-indicator daemon wrapper"
+
+.SH NAME
+ping-indicator-daemon-wrapper \- program for wrapping ping-indicator's deamon
+
+.SH DESCRIPTION
+This manual page explains the
+.B ping-indicator-daemon-wrapper
+program. 
+.PP
+\fBping-indicator-daemon-wrapper\fP is to run ping-indicator deamon in background abd suply gui with ping result data.
+
+.SH "SEE ALSO"
+http://salseeg.github.io/ping-indicator/
