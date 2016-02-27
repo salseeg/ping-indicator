@@ -9,6 +9,7 @@ class Conf:
     def __init__(self, user):
         self.filename = os.path.expanduser("~/.ping-indicator/conf")
         self.servers = []
+        self.refreshInterval = 1000
         self.read()
 
     def read(self):
@@ -16,7 +17,13 @@ class Conf:
             servers = list()
             f = open(self.filename, "r")
             for line in f:
-                servers.append(line.strip())
+                str = line.strip()
+                if str[0] == ":":
+                    if str[:17] == ":refreshInterval:":
+                        self.refreshInterval = int(str[17:])
+                else:
+                    servers.append(line.strip())
+
             self.servers = servers
             f.close()
         else:
@@ -32,6 +39,7 @@ class Conf:
         f = open(self.filename, "w")
         for s in self.servers:
             f.write(s + "\n")
+        f.write(":refreshInterval:{}\n".format(self.refreshInterval))
         f.close()
 
     def set_servers(self, text):

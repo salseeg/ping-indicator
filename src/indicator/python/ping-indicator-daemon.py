@@ -116,6 +116,7 @@ if __name__ == "__main__":
         signal.signal(signal.SIGHUP, signal_handler)
 
         c = conf.Conf(user)
+        PING_FREQUENCY = 1000 / c.refreshInterval
 
         daemon = PingIndicatorDaemon(c.servers, user)
         daemon.main()
