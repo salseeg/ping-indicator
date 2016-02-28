@@ -1,3 +1,10 @@
+ping-indicator (1.0) unstable; urgency=medium
+
+  * added ping interval control
+  * fixed menu bug 
+
+ -- Sergey Lukianov <salseeg@gmail.com>  Sun, 28 Feb 2016 18:31:39 +0200
+
 ping-indicator (0.99-31) unstable; urgency=medium
 
   * fixing packaging 
