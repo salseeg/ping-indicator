@@ -7,6 +7,7 @@ It still has its rough edges and unimplemented parts, but does the job:
  -   shows packet loss with solid red band
  -   monitors response time with logarithmic scale
  -   refreshes host IP (if DNS changed)
+ -   has configurable ping interval
 
 Star/Watch the project to encourage further improvements.
 
