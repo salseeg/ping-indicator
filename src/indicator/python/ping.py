@@ -105,10 +105,11 @@ def to_ip(addr):
 
 
 class Ping(object):
-    def __init__(self, destination, timeout=1000, packet_size=55, own_id=None):
+    def __init__(self, destination, timeout=1000, packet_size=55, own_id=None, max_sleep=1000):
         self.destination = destination
         self.timeout = timeout
         self.packet_size = packet_size
+        self.max_sleep = max_sleep
         if own_id is None:
             self.own_id = os.getpid() & 0xFFFF
         else:
@@ -215,8 +216,8 @@ class Ping(object):
                 delay = 0
 
             # Pause for the remainder of the MAX_SLEEP period (if applicable)
-            if MAX_SLEEP > delay:
-                time.sleep((MAX_SLEEP - delay) / 1000.0)
+            if self.max_sleep > delay:
+                time.sleep((self.max_sleep - delay) / 1000.0)
 
         self.print_exit()
 

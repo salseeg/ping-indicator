@@ -17,7 +17,7 @@ import data_exch
 sys.path.append('/usr/share/ping-indicator/python/')
 
 
-PING_FREQUENCY = 1  # HZ
+PING_FREQUENCY = 1.0  # HZ
 
 
 def signal_handler():
@@ -27,14 +27,15 @@ def signal_handler():
 
 
 def make_ping_object(h, ping_id):
-    timeout = 500
+    timeout = min(500, 1000.0/PING_FREQUENCY if PING_FREQUENCY else 500)
+    max_sleep = int(1000.0 / PING_FREQUENCY)
     if not is_valid_ip4_address(h):
         try:
             h = socket.gethostbyname(h)
         except:
             return False
     # print "ping_id = {}\n".format(ping_id)
-    return Ping(h, timeout, own_id=ping_id)
+    return Ping(h, timeout, own_id=ping_id, max_sleep=max_sleep)
 
 
 class PingThread(threading.Thread):
@@ -62,7 +63,7 @@ class PingThread(threading.Thread):
             except:
                 self.q.put((self.hostname, -1))
                 delay = 10
-            to_sleep = 1000 / PING_FREQUENCY
+            to_sleep = 1000.0 / PING_FREQUENCY
             to_sleep -= delay
             to_sleep = max(to_sleep, 0)
             self.counter -= 1
@@ -89,16 +90,18 @@ class PingIndicatorDaemon:
                     delays[host] = delay
                 except Queue.Empty:
                     break
-
+            # if __debug__:
+            #     print delays
             self.show_results([(h, delays[h]) for h in self.hostnames])
 
-            to_sleep = 1000 / PING_FREQUENCY
+            to_sleep = (1000.0 / PING_FREQUENCY) if PING_FREQUENCY else 1000
             to_sleep = max(to_sleep, 0)
-            time.sleep(to_sleep / 1000)
+            # print "going to sleep {} ms ..".format(to_sleep)
 
-            # def init_pinger(self, hostnames):
-            # self.hosts = [ make_ping_object(h) for h in hostnames ]
-            # self.hosts = []
+            seconds = to_sleep / 1000.0
+            # if __debug__:
+            #     print seconds
+            time.sleep(seconds)
 
     def show_results(self, delays):
         data = data_exch.Data_Exch(self.user)
@@ -116,7 +119,7 @@ if __name__ == "__main__":
         signal.signal(signal.SIGHUP, signal_handler)
 
         c = conf.Conf(user)
-        PING_FREQUENCY = 1000 / c.refreshInterval
+        PING_FREQUENCY = 1000.0 / c.refreshInterval
 
         daemon = PingIndicatorDaemon(c.servers, user)
         daemon.main()

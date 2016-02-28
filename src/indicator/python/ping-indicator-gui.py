@@ -97,7 +97,7 @@ class AppIndicator(object):
         self.menu.append(item)
         self.menu.show_all()
         self.ind.set_menu(self.menu)
-        gtk.timeout_add(UPDATE_TIMEOUT, self.update)
+        self.gtkTimer = gtk.timeout_add(UPDATE_TIMEOUT, self.update)
 
     def start_deamon(self):
         self.daemon = subprocess.Popen([os.path.expanduser(BIN_DIR + "ping-indicator-daemon-wrapper"), self.user])
@@ -106,6 +106,7 @@ class AppIndicator(object):
         self.pref_tree = gtk.glade.XML(UI_DIR + "conf.glade", "dialog1")
         window = self.pref_tree.get_widget("dialog1")
         # window.connect("delete_event", gtk.main_quit)
+        c = conf.Conf(self.user)
         data_file = data_exch.Data_Exch(self.user)
         data = data_file.read()
         text = ""
@@ -115,6 +116,10 @@ class AppIndicator(object):
         tw = self.pref_tree.get_widget("hosts__textview")
         buf = tw.get_buffer()
         buf.set_text(text)
+
+        scale = self.pref_tree.get_widget("interval__hscale")
+        scale.set_value(c.refreshInterval)
+
         self.pref_tree.get_widget("cancel__button").connect("clicked", self.close_prefs)
         self.pref_tree.get_widget("ok__button").connect("clicked", self.apply_prefs)
         window.show_all()
@@ -126,11 +131,22 @@ class AppIndicator(object):
     def apply_prefs(self, obj):
         buf = self.pref_tree.get_widget("hosts__textview").get_buffer()
         text = buf.get_text(buf.get_start_iter(), buf.get_end_iter())
+        scale = self.pref_tree.get_widget("interval__hscale")
+
         c = conf.Conf(self.user)
         c.set_servers(text)
+        c.refreshInterval = int(scale.get_value())
+        c.write()
+
+        self.restart_timer(c.refreshInterval)
         self.restart_deamon()
+
         self.close_prefs(obj)
         self.needToRebuildMenu = True
+
+    def restart_timer(self, timeout):
+        gtk.timeout_remove(self.gtkTimer)
+        self.gtkTimer = gtk.timeout_add(timeout, self.update)
 
     def restart_deamon(self):
         self.daemon.terminate()

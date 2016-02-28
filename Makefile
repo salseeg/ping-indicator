@@ -28,6 +28,7 @@ prepare_pkg: clean prepare_pkg_dir
 	gzip -n --best pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
 	$(MAKE) -C src/wrapper/ into_pkg
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
+	rm -r pkg/usr/share/ping-indicator/python/tests/
 	cp -r imgs pkg/usr/share/ping-indicator/
 	sudo chmod 755 pkg/usr pkg/usr/bin pkg/usr/share pkg/usr/share/ping-indicator \
 			pkg/usr/share/ping-indicator/python \
@@ -58,6 +59,8 @@ pkg: prepare_pkg
 
 clean:
 	sudo rm -rf pkg/usr
+	rm -f src/indicator/python/*.pyc
+	rm -f src/indicator/python/*/*.pyc
 
 check_deb: pkg
 	lintian ping-indicator_$(CURRENT_VERSION).deb
