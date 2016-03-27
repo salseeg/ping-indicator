@@ -1,4 +1,4 @@
-.PHONY: all pkg clean check_deb prepare_pkg prepare_pkg_dir
+.PHONY: all pkg clean check_deb prepare_pkg prepare_pkg_dir bin_64 bin_32 do_prepare_pkg
 
 SHELL=/bin/bash
 CURRENT_VERSION := $(shell cat pkg/DEBIAN/control | grep Version: | cut -f 2 -d ' ')
@@ -8,25 +8,21 @@ all: check_deb
 
 prepare_pkg_dir: 
 	mkdir -p pkg/usr/bin pkg/usr/share/ping-indicator pkg/usr/share/doc/ping-indicator pkg/usr/share/man/man1
-generate_changelog:
-	echo "ping-indicator ($(CURRENT_VERSION)) trusty ; urgency=low" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	git log --pretty=format:" * %s" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo " -- Sergey Lukianov <salseeg@gmail.com>  $(CURRENT_DATE)" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo "Old Changelog:" >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	echo  >> pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian		
+bin_32:
+	$(MAKE) -C src/wrapper/ into_pkg_32
 
-prepare_pkg: clean prepare_pkg_dir
+bin_64: 
+	$(MAKE) -C src/wrapper/ into_pkg
+
+
+prepare_pkg: clean prepare_pkg_dir bin_64 do_prepare_pkg
+
+do_prepare_pkg:
 	cp debian/changelog pkg/usr/share/doc/ping-indicator/changelog.Debian	 
 	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian		
 	cp debian/copyright pkg/usr/share/doc/ping-indicator/copyright		
 	cp debian/ping-indicator-deamon-wrapper.1.man pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1		
 	gzip -n --best pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
-	$(MAKE) -C src/wrapper/ into_pkg
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	rm -r pkg/usr/share/ping-indicator/python/tests/
 	cp -r imgs pkg/usr/share/ping-indicator/
@@ -55,7 +51,12 @@ prepare_pkg: clean prepare_pkg_dir
 	sudo chown -R root:root pkg/usr pkg/DEBIAN/post*
 
 pkg: prepare_pkg
-	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION).deb
+	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_amd64.deb
+
+pkg32: clean prepare_pkg_dir bin_32 do_prepare_pkg
+	sed -i 's/Architecture: amd64/Architecture: i386/' pkg/DEBIAN/control
+	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_i386.deb
+	sed -i 's/Architecture: i386/Architecture: amd64/' pkg/DEBIAN/control
 
 clean:
 	sudo rm -rf pkg/usr
@@ -63,4 +64,4 @@ clean:
 	rm -f src/indicator/python/*/*.pyc
 
 check_deb: pkg
-	lintian ping-indicator_$(CURRENT_VERSION).deb
+	lintian ping-indicator_$(CURRENT_VERSION)_amd64.deb
