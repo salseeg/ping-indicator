@@ -20,7 +20,7 @@ sys.path.append('/usr/share/ping-indicator/python/')
 PING_FREQUENCY = 1.0  # HZ
 
 
-def signal_handler():
+def signal_handler(signum, frame):
     global daemon
     daemon.quit()
     sys.exit(0)
