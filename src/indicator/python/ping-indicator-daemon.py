@@ -20,10 +20,17 @@ sys.path.append('/usr/share/ping-indicator/python/')
 PING_FREQUENCY = 1.0  # HZ
 
 
-def signal_handler():
-    global daemon
-    daemon.quit()
-    sys.exit(0)
+def init_signals(daemon):
+    """Catch signals to stop daemon before exiting."""
+
+    def signal_action(signum, frame):
+        """To be executed upon exit signal."""
+        daemon.quit()
+        sys.exit(0)
+
+    # catch signals and handle appropriately
+    for sig in [signal.SIGINT, signal.SIGHUP]:
+        signal.signal(sig, signal_action)
 
 
 def make_ping_object(h, ping_id):
@@ -115,11 +122,9 @@ if __name__ == "__main__":
     user = sys.argv[1]
 
     if len(user) > 0:
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGHUP, signal_handler)
-
         c = conf.Conf(user)
         PING_FREQUENCY = 1000.0 / c.refreshInterval
 
         daemon = PingIndicatorDaemon(c.servers, user)
+        init_signals(daemon)
         daemon.main()

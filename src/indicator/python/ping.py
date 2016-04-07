@@ -9,7 +9,7 @@
 
     Bugs are naturally mine. I'd be glad to hear about them. There are
     certainly word - size dependencies here.
-    
+
     :homepage: https://github.com/jedie/python-ping/
     :copyleft: 1989-2011 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
