@@ -1,13 +1,12 @@
 Package: ping-indicator
-Version: 1.0-3
+Version: 1.0-4
 Maintainer: Sergey Lukianov <salseeg@gmail.com>
 Architecture: amd64
 Section: net
 Priority: extra
 Homepage: http://salseeg.github.io/ping-indicator/
-Depends: python(>=2.6), python-appindicator, python-glade2, python-imaging, python-gtk2, libc6 (>= 2.4)
+Depends: python(>=2.6), python-appindicator, python-glade2, python-imaging | python-pil, python-gtk2, libc6 (>= 2.4)
 Installed-Size: 100
 Description: link monitor for Unity
  Ping-indicator is Ubuntu Unity indicator to show host connectivity.
  http://salseeg.github.io/ping-indicator/
-
