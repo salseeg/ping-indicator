@@ -5,7 +5,10 @@ import gtk
 import gtk.glade
 import appindicator
 import time
-import Image
+try:
+    import Image
+except ImportError:
+    from PIL import Image
 import os.path
 import subprocess
 import sys
