@@ -18,10 +18,10 @@ bin_64:
 prepare_pkg: clean prepare_pkg_dir bin_64 do_prepare_pkg
 
 do_prepare_pkg:
-	cp debian/changelog pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian		
-	cp debian/copyright pkg/usr/share/doc/ping-indicator/copyright		
-	cp debian/ping-indicator-deamon-wrapper.1.man pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1		
+	cp debian/changelog pkg/usr/share/doc/ping-indicator/changelog.Debian
+	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian
+	cp debian/copyright pkg/usr/share/doc/ping-indicator/copyright
+	cp debian/ping-indicator-deamon-wrapper.1.man pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
 	gzip -n --best pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	rm -r pkg/usr/share/ping-indicator/python/tests/
@@ -62,6 +62,7 @@ clean:
 	fakeroot rm -rf pkg/usr
 	rm -f src/indicator/python/*.pyc
 	rm -f src/indicator/python/*/*.pyc
+	rm -f *.deb
 
 check_deb: pkg
 	lintian ping-indicator_$(CURRENT_VERSION)_amd64.deb
