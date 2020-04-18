@@ -18,15 +18,15 @@ bin_64:
 prepare_pkg: clean prepare_pkg_dir bin_64 do_prepare_pkg
 
 do_prepare_pkg:
-	cp debian/changelog pkg/usr/share/doc/ping-indicator/changelog.Debian	 
-	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian		
-	cp debian/copyright pkg/usr/share/doc/ping-indicator/copyright		
-	cp debian/ping-indicator-deamon-wrapper.1.man pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1		
+	cp debian/changelog pkg/usr/share/doc/ping-indicator/changelog.Debian
+	gzip -n --best pkg/usr/share/doc/ping-indicator/changelog.Debian
+	cp debian/copyright pkg/usr/share/doc/ping-indicator/copyright
+	cp debian/ping-indicator-deamon-wrapper.1.man pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
 	gzip -n --best pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1
 	cp -r src/indicator/* pkg/usr/share/ping-indicator/
 	rm -r pkg/usr/share/ping-indicator/python/tests/
 	cp -r imgs pkg/usr/share/ping-indicator/
-	sudo chmod 755 pkg/usr pkg/usr/bin pkg/usr/share pkg/usr/share/ping-indicator \
+	chmod 755 pkg/usr pkg/usr/bin pkg/usr/share pkg/usr/share/ping-indicator \
 			pkg/usr/share/ping-indicator/python \
 			pkg/usr/share/ping-indicator/imgs \
 			pkg/usr/share/ping-indicator/ui \
@@ -39,7 +39,7 @@ do_prepare_pkg:
 			pkg/usr/share/ping-indicator/python/ping-indicator-daemon.py \
 			pkg/DEBIAN/post* \
 			pkg/usr/share/ping-indicator/ui
-	sudo chmod 644 pkg/usr/share/ping-indicator/imgs/* \
+	chmod 644 pkg/usr/share/ping-indicator/imgs/* \
 			pkg/usr/share/ping-indicator/python/ping.py \
 			pkg/usr/share/ping-indicator/python/data_exch.py \
 			pkg/usr/share/ping-indicator/python/conf.py \
@@ -48,20 +48,21 @@ do_prepare_pkg:
 			pkg/usr/share/man/man1/ping-indicator-daemon-wrapper.1.gz \
 			pkg/usr/share/ping-indicator/ui/conf.glade
 	strip pkg/usr/bin/ping-indicator-daemon-wrapper
-	sudo chown -R root:root pkg/usr pkg/DEBIAN/post*
+	fakeroot chown -R root:root pkg/usr pkg/DEBIAN/post*
 
 pkg: prepare_pkg
-	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_amd64.deb
+	fakeroot dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_amd64.deb
 
 pkg32: clean prepare_pkg_dir bin_32 do_prepare_pkg
 	sed -i 's/Architecture: amd64/Architecture: i386/' pkg/DEBIAN/control
-	dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_i386.deb
+	fakeroot dpkg-deb -b pkg ping-indicator_$(CURRENT_VERSION)_i386.deb
 	sed -i 's/Architecture: i386/Architecture: amd64/' pkg/DEBIAN/control
 
 clean:
-	sudo rm -rf pkg/usr
+	fakeroot rm -rf pkg/usr
 	rm -f src/indicator/python/*.pyc
 	rm -f src/indicator/python/*/*.pyc
+	rm -f *.deb
 
 check_deb: pkg
 	lintian ping-indicator_$(CURRENT_VERSION)_amd64.deb
